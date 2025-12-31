@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    height: 100dvh;
+    overflow: hidden;
+    font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: #FDFBF7;
+    color: #2D3748;
+  }
+
+  body.dark {
+    background-color: #1A1A2E;
+    color: #E4E4E7;
+  }
+
+  #root {
+    height: 100dvh;
+    overflow: hidden;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-md rounded-3xl shadow-lg border border-white/20;
+  }
+
+  .dark .glass-card {
+    @apply bg-dark-card/80 backdrop-blur-md border-dark-card/40;
+  }
+
+  .btn-primary {
+    @apply px-6 py-3 rounded-2xl font-medium transition-all duration-200 active:scale-95;
+  }
+
+  .btn-coral {
+    @apply btn-primary bg-coral text-white hover:bg-coral/90 shadow-lg shadow-coral/30;
+  }
+
+  .btn-teal {
+    @apply btn-primary bg-teal text-white hover:bg-teal/90 shadow-lg shadow-teal/30;
+  }
+
+  .btn-solar {
+    @apply btn-primary bg-solar text-slate hover:bg-solar/90 shadow-lg shadow-solar/30;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 rounded-2xl border-2 border-slate/20 focus:border-teal focus:outline-none transition-colors bg-white/50 backdrop-blur-sm;
+  }
+
+  .dark .input-field {
+    @apply bg-dark-card/50 border-dark-text/20 text-dark-text;
+  }
+}
+
+@layer utilities {
+  .text-glow {
+    text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+  }
+
+  .icon-glow {
+    filter: drop-shadow(0 0 4px currentColor);
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
