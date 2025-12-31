@@ -211,19 +211,27 @@ const Journal = ({ onBack }) => {
                   // Check if this is a module entry or a personal note
                   const isModuleEntry = entry.type && entry.module;
                   
+                  // Color mapping for module banners
+                  const colorMap = {
+                    'coral': { banner: 'bg-coral', badge: 'bg-coral/10 text-coral' },
+                    'solar': { banner: 'bg-solar', badge: 'bg-solar/10 text-solar' },
+                    'purple-400': { banner: 'bg-purple-400', badge: 'bg-purple-400/10 text-purple-400' }
+                  };
+                  const colors = colorMap[entry.moduleColor] || { banner: 'bg-slate', badge: 'bg-slate/10 text-slate' };
+                  
                   return (
                     <Card key={entry.id} className="relative">
                       {/* Module Banner */}
                       {isModuleEntry && (
-                        <div className={`absolute top-0 left-0 right-0 h-1 rounded-t-3xl bg-${entry.moduleColor}`} />
+                        <div className={`absolute top-0 left-0 right-0 h-1 rounded-t-3xl ${colors.banner}`} />
                       )}
                       
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">
                           {/* Module Label */}
                           {isModuleEntry && (
-                            <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-${entry.moduleColor}/10 mb-2`}>
-                              <span className={`text-xs font-semibold text-${entry.moduleColor}`}>
+                            <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg ${colors.badge} mb-2`}>
+                              <span className="text-xs font-semibold">
                                 {entry.module}
                               </span>
                             </div>

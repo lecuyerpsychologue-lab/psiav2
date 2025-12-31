@@ -13,25 +13,33 @@ const FloatingDock = ({ currentModule, onNavigate }) => {
       id: 'echo',
       name: 'Écho',
       icon: Heart,
-      color: 'coral'
+      color: 'coral',
+      bgClass: 'bg-coral',
+      textClass: 'text-coral'
     },
     {
       id: 'heros',
       name: 'Héros',
       icon: Trophy,
-      color: 'solar'
+      color: 'solar',
+      bgClass: 'bg-solar',
+      textClass: 'text-solar'
     },
     {
       id: 'psy',
       name: 'PsIA',
       icon: MessageCircle,
-      color: 'teal'
+      color: 'teal',
+      bgClass: 'bg-teal',
+      textClass: 'text-teal'
     },
     {
       id: 'identite',
       name: 'Identité',
       icon: User,
-      color: 'purple-400'
+      color: 'purple-400',
+      bgClass: 'bg-purple-400',
+      textClass: 'text-purple-400'
     }
   ];
 
@@ -49,7 +57,7 @@ const FloatingDock = ({ currentModule, onNavigate }) => {
                 onClick={() => onNavigate(item.id)}
                 className={`relative group p-3 rounded-2xl transition-all duration-200 ${
                   isActive 
-                    ? `bg-${item.color} shadow-lg transform scale-110` 
+                    ? `${item.bgClass} shadow-lg transform scale-110` 
                     : 'hover:bg-slate/10 dark:hover:bg-dark-text/10 hover:scale-105'
                 }`}
                 title={item.name}
@@ -58,7 +66,7 @@ const FloatingDock = ({ currentModule, onNavigate }) => {
                   className={`w-6 h-6 transition-colors ${
                     isActive 
                       ? 'text-white icon-glow' 
-                      : `text-${item.color}`
+                      : item.textClass
                   }`} 
                 />
                 

@@ -76,9 +76,11 @@ const Ancrage = ({ onBack }) => {
         }
 
         if (finalTranscript) {
-          const newResponses = [...responses];
-          newResponses[currentStep] = (newResponses[currentStep] + ' ' + finalTranscript).trim();
-          setResponses(newResponses);
+          setResponses(prev => {
+            const newResponses = [...prev];
+            newResponses[currentStep] = (newResponses[currentStep] + ' ' + finalTranscript).trim();
+            return newResponses;
+          });
         }
       };
 
@@ -92,14 +94,12 @@ const Ancrage = ({ onBack }) => {
       };
 
       setRecognition(recognitionInstance);
-    }
 
-    return () => {
-      if (recognition) {
-        recognition.stop();
-      }
-    };
-  }, []);
+      return () => {
+        recognitionInstance.stop();
+      };
+    }
+  }, [currentStep]);
 
   const toggleRecording = () => {
     if (!recognition) {

@@ -61,7 +61,7 @@ RETOURNE UNIQUEMENT LE JSON, rien d'autre.`;
       }
 
       // Check if topic is not psychology-related
-      if (articleData.titre && articleData.titre.includes('psychologie')) {
+      if (response.includes('Je ne peux traiter que des sujets de psychologie')) {
         throw new Error('Ce sujet n\'est pas lié à la psychologie');
       }
 
