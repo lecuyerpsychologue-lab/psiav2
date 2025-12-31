@@ -10,6 +10,9 @@ import Ancrage from './modules/Ancrage/Ancrage';
 import Journal from './modules/Journal/Journal';
 import Psy from './modules/Psy/Psy';
 import Oracle from './modules/Oracle/Oracle';
+import Echo from './modules/Echo/Echo';
+import Heros from './modules/Heros/Heros';
+import Identite from './modules/Identite/Identite';
 
 const AppContent = () => {
   const { user, loading } = useAuth();
@@ -52,26 +55,11 @@ const AppContent = () => {
       case 'oracle':
         return <Oracle onBack={onBack} />;
       case 'echo':
+        return <Echo onBack={onBack} />;
       case 'heros':
+        return <Heros onBack={onBack} />;
       case 'identite':
-        return (
-          <div className="h-screen flex items-center justify-center bg-cream dark:bg-dark-bg">
-            <div className="text-center max-w-md px-4">
-              <h1 className="text-3xl font-bold text-slate dark:text-dark-text mb-4">
-                Module: {currentModule}
-              </h1>
-              <p className="text-slate/70 dark:text-dark-text/70 mb-6">
-                Ce module est en cours de développement
-              </p>
-              <button
-                onClick={onBack}
-                className="px-6 py-3 rounded-2xl bg-teal text-white hover:bg-teal/90 transition-colors"
-              >
-                Retour au Dashboard
-              </button>
-            </div>
-          </div>
-        );
+        return <Identite onBack={onBack} />;
       default:
         return <Dashboard onNavigate={setCurrentModule} />;
     }
