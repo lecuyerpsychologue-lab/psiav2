@@ -1,0 +1,18 @@
+{
+  "name": "TheraSpace",
+  "short_name": "TheraSpace",
+  "description": "Ton thérapeute de poche pour le bien-être mental",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FDFBF7",
+  "theme_color": "#FDFBF7",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
