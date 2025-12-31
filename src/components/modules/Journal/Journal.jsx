@@ -4,22 +4,54 @@ import { storage, formatDateTime } from '../../../utils/helpers';
 import Button from '../../ui/Button';
 import Card from '../../ui/Card';
 import Modal from '../../ui/Modal';
-import { BookOpen, X, Plus, Trash2 } from 'lucide-react';
+import { BookOpen, X, Plus, Trash2, Trophy, CheckSquare, Square } from 'lucide-react';
 
 const Journal = ({ onBack }) => {
   const { user } = useAuth();
   const [entries, setEntries] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [newEntry, setNewEntry] = useState('');
+  const [showQuests, setShowQuests] = useState(false);
+  const [herosProgram, setHerosProgram] = useState(null);
+  const [questProgress, setQuestProgress] = useState({});
 
   useEffect(() => {
     loadEntries();
+    loadHerosProgram();
   }, [user]);
 
   const loadEntries = () => {
     if (user) {
       const saved = storage.get(`journal_${user.id}`) || [];
       setEntries(saved);
+    }
+  };
+
+  const loadHerosProgram = () => {
+    if (user) {
+      const program = storage.get(`heros_${user.id}_program`);
+      if (program) {
+        setHerosProgram(program);
+        setQuestProgress(program.progress || {});
+      }
+    }
+  };
+
+  const toggleQuest = (weekIndex, questIndex) => {
+    const questKey = `${weekIndex}-${questIndex}`;
+    const newProgress = {
+      ...questProgress,
+      [questKey]: !questProgress[questKey]
+    };
+    
+    setQuestProgress(newProgress);
+    
+    // Save to localStorage
+    if (herosProgram) {
+      storage.set(`heros_${user.id}_program`, {
+        ...herosProgram,
+        progress: newProgress
+      });
     }
   };
 
@@ -60,17 +92,31 @@ const Journal = ({ onBack }) => {
               Journal
             </h1>
             <p className="text-sm text-slate/70 dark:text-dark-text/70">
-              Tes notes et réflexions
+              {showQuests ? 'Tes quêtes Héros' : 'Tes notes et réflexions'}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="p-2 rounded-2xl bg-teal hover:bg-teal/90 transition-colors shadow-lg"
-          >
-            <Plus className="w-6 h-6 text-white" />
-          </button>
+          {herosProgram && (
+            <button
+              onClick={() => setShowQuests(!showQuests)}
+              className="p-2 rounded-2xl bg-solar hover:bg-solar/90 transition-colors shadow-lg"
+            >
+              {showQuests ? (
+                <BookOpen className="w-6 h-6 text-white" />
+              ) : (
+                <Trophy className="w-6 h-6 text-white" />
+              )}
+            </button>
+          )}
+          {!showQuests && (
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="p-2 rounded-2xl bg-teal hover:bg-teal/90 transition-colors shadow-lg"
+            >
+              <Plus className="w-6 h-6 text-white" />
+            </button>
+          )}
           <button
             onClick={onBack}
             className="p-2 rounded-2xl hover:bg-slate/10 dark:hover:bg-dark-text/10 transition-colors"
@@ -83,43 +129,106 @@ const Journal = ({ onBack }) => {
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto px-4 pb-4 scrollbar-hide">
         <div className="max-w-2xl mx-auto space-y-4">
-          {entries.length === 0 ? (
-            <Card className="text-center py-12">
-              <BookOpen className="w-16 h-16 text-slate/30 dark:text-dark-text/30 mx-auto mb-4" />
-              <h3 className="text-xl font-bold text-slate dark:text-dark-text mb-2">
-                Ton journal est vide
-              </h3>
-              <p className="text-slate/70 dark:text-dark-text/70 mb-6">
-                Commence à écrire tes pensées et réflexions
-              </p>
-              <Button
-                variant="primary"
-                onClick={() => setShowAddModal(true)}
-              >
-                Ajouter une note
-              </Button>
-            </Card>
-          ) : (
-            entries.map(entry => (
-              <Card key={entry.id} className="relative">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1">
-                    <p className="text-sm text-slate/60 dark:text-dark-text/60 mb-2">
-                      {formatDateTime(entry.timestamp)}
-                    </p>
-                    <p className="text-slate dark:text-dark-text whitespace-pre-wrap">
-                      {entry.content}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => deleteEntry(entry.id)}
-                    className="flex-shrink-0 p-2 rounded-full hover:bg-coral/10 text-coral transition-colors"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+          {showQuests && herosProgram ? (
+            // Quests View
+            <>
+              <Card className="bg-solar/10 border-2 border-solar/30">
+                <div className="flex items-center gap-3 mb-2">
+                  <Trophy className="w-6 h-6 text-solar" />
+                  <h3 className="text-lg font-bold text-slate dark:text-dark-text">
+                    Programme Héros - 60 jours
+                  </h3>
                 </div>
+                <p className="text-sm text-slate/70 dark:text-dark-text/70">
+                  Coche les quêtes accomplies pour suivre ta progression
+                </p>
               </Card>
-            ))
+
+              {herosProgram.programme.map((week, weekIndex) => (
+                <Card key={weekIndex}>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-full bg-solar/20 flex items-center justify-center font-bold text-solar">
+                      {week.semaine}
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-slate dark:text-dark-text">
+                        {week.focus}
+                      </h4>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    {week.quetes.map((quete, questIndex) => {
+                      const questKey = `${weekIndex}-${questIndex}`;
+                      const isCompleted = questProgress[questKey];
+                      
+                      return (
+                        <button
+                          key={questIndex}
+                          onClick={() => toggleQuest(weekIndex, questIndex)}
+                          className="w-full flex items-start gap-3 p-3 rounded-xl bg-slate/5 hover:bg-slate/10 transition-colors text-left"
+                        >
+                          {isCompleted ? (
+                            <CheckSquare className="w-5 h-5 text-teal flex-shrink-0 mt-0.5" />
+                          ) : (
+                            <Square className="w-5 h-5 text-slate/40 flex-shrink-0 mt-0.5" />
+                          )}
+                          <p className={`text-sm flex-1 ${
+                            isCompleted 
+                              ? 'text-slate/50 dark:text-dark-text/50 line-through' 
+                              : 'text-slate dark:text-dark-text'
+                          }`}>
+                            {quete}
+                          </p>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </Card>
+              ))}
+            </>
+          ) : (
+            // Journal Entries View
+            <>
+              {entries.length === 0 ? (
+                <Card className="text-center py-12">
+                  <BookOpen className="w-16 h-16 text-slate/30 dark:text-dark-text/30 mx-auto mb-4" />
+                  <h3 className="text-xl font-bold text-slate dark:text-dark-text mb-2">
+                    Ton journal est vide
+                  </h3>
+                  <p className="text-slate/70 dark:text-dark-text/70 mb-6">
+                    Commence à écrire tes pensées et réflexions
+                  </p>
+                  <Button
+                    variant="primary"
+                    onClick={() => setShowAddModal(true)}
+                  >
+                    Ajouter une note
+                  </Button>
+                </Card>
+              ) : (
+                entries.map(entry => (
+                  <Card key={entry.id} className="relative">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <p className="text-sm text-slate/60 dark:text-dark-text/60 mb-2">
+                          {formatDateTime(entry.timestamp)}
+                        </p>
+                        <p className="text-slate dark:text-dark-text whitespace-pre-wrap">
+                          {entry.content}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => deleteEntry(entry.id)}
+                        className="flex-shrink-0 p-2 rounded-full hover:bg-coral/10 text-coral transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </Card>
+                ))
+              )}
+            </>
           )}
         </div>
       </main>
