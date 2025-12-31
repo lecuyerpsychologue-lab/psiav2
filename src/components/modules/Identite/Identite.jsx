@@ -37,7 +37,23 @@ const Identite = ({ onBack }) => {
 RÈGLES:
 - Questions personnelles, introspectives et variées
 - Maximum 8 mots par question
-- Exemples: "Ton surnom ?", "Ton point faible ?", "Ton rêve le plus fou ?"
+- DOIT couvrir CES 10 thématiques OBLIGATOIRES:
+  1. Surnom / Comment on t'appelle
+  2. Point faible
+  3. Point fort / Qualité
+  4. Rêve le plus fou
+  5. Plus grande peur
+  6. Ce qui te rend heureux
+  7. Ce qui t'énerve le plus
+  8. Défaut que ton entourage te trouverait
+  9. Qualité que ton entourage te trouverait
+  10. Ce que tu changerais dans le monde
+
+Exemples: 
+"Ton surnom préféré ?", 
+"Ton plus gros défaut ?", 
+"Ton rêve le plus fou ?",
+"Ce qui te rend vraiment heureux ?"
 
 Retourne UNIQUEMENT un tableau JSON:
 ["question 1", "question 2", ...]`;
@@ -100,16 +116,16 @@ Retourne UNIQUEMENT un tableau JSON:
         setQuestions({
           ...questions,
           part1: [
-            "Ton surnom ?",
-            "Ton point faible ?",
+            "Ton surnom préféré ?",
+            "Ton plus gros défaut ?",
+            "Ta plus belle qualité ?",
             "Ton rêve le plus fou ?",
-            "Ce qui te fait rire ?",
             "Ta plus grande peur ?",
-            "Ton talent caché ?",
-            "Ce que tu détestes ?",
-            "Ton lieu préféré ?",
-            "Ta devise ?",
-            "Ce qui te rend unique ?"
+            "Ce qui te rend vraiment heureux ?",
+            "Ce qui t'énerve le plus ?",
+            "Défaut que ton entourage te trouverait ?",
+            "Qualité que ton entourage te trouverait ?",
+            "Ce que tu changerais dans le monde ?"
           ]
         });
       } else if (part === 2) {

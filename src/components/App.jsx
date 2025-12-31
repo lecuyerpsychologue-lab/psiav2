@@ -4,6 +4,7 @@ import { ThemeProvider } from '../contexts/ThemeContext';
 import Login from './auth/Login';
 import Register from './auth/Register';
 import Dashboard from './dashboard/Dashboard';
+import FloatingDock from './navigation/FloatingDock';
 import Humeur from './modules/Humeur/Humeur';
 import Respiration from './modules/Respiration/Respiration';
 import Ancrage from './modules/Ancrage/Ancrage';
@@ -68,7 +69,12 @@ const AppContent = () => {
     }
   };
 
-  return renderModule();
+  return (
+    <>
+      {renderModule()}
+      {user && <FloatingDock currentModule={currentModule} onNavigate={setCurrentModule} />}
+    </>
+  );
 };
 
 const App = () => {

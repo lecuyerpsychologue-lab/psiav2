@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Button from '../../ui/Button';
 import Card from '../../ui/Card';
-import { Anchor, X, ArrowRight } from 'lucide-react';
+import { Anchor, X, ArrowRight, Mic, MicOff } from 'lucide-react';
 
 const Ancrage = ({ onBack }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [responses, setResponses] = useState(['', '', '', '', '']);
+  const [isRecording, setIsRecording] = useState(false);
+  const [recognition, setRecognition] = useState(null);
+  const textareaRef = useRef(null);
 
   const steps = [
     {
@@ -50,6 +53,69 @@ const Ancrage = ({ onBack }) => {
     }
   ];
 
+  useEffect(() => {
+    // Initialize Speech Recognition
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognitionInstance = new SpeechRecognition();
+      recognitionInstance.continuous = true;
+      recognitionInstance.interimResults = true;
+      recognitionInstance.lang = 'fr-FR';
+
+      recognitionInstance.onresult = (event) => {
+        let interimTranscript = '';
+        let finalTranscript = '';
+
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            finalTranscript += transcript + ' ';
+          } else {
+            interimTranscript += transcript;
+          }
+        }
+
+        if (finalTranscript) {
+          const newResponses = [...responses];
+          newResponses[currentStep] = (newResponses[currentStep] + ' ' + finalTranscript).trim();
+          setResponses(newResponses);
+        }
+      };
+
+      recognitionInstance.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+        setIsRecording(false);
+      };
+
+      recognitionInstance.onend = () => {
+        setIsRecording(false);
+      };
+
+      setRecognition(recognitionInstance);
+    }
+
+    return () => {
+      if (recognition) {
+        recognition.stop();
+      }
+    };
+  }, []);
+
+  const toggleRecording = () => {
+    if (!recognition) {
+      alert('La dictée vocale n\'est pas supportée par ton navigateur.');
+      return;
+    }
+
+    if (isRecording) {
+      recognition.stop();
+      setIsRecording(false);
+    } else {
+      recognition.start();
+      setIsRecording(true);
+    }
+  };
+
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
@@ -68,6 +134,10 @@ const Ancrage = ({ onBack }) => {
   const handleRestart = () => {
     setCurrentStep(0);
     setResponses(['', '', '', '', '']);
+    setIsRecording(false);
+    if (recognition) {
+      recognition.stop();
+    }
   };
 
   if (currentStep >= steps.length) {
@@ -201,16 +271,36 @@ const Ancrage = ({ onBack }) => {
             </p>
 
             {/* Input */}
-            <textarea
-              value={responses[currentStep]}
-              onChange={(e) => {
-                const newResponses = [...responses];
-                newResponses[currentStep] = e.target.value;
-                setResponses(newResponses);
-              }}
-              placeholder={step.placeholder}
-              className="w-full h-32 px-4 py-3 rounded-2xl border-2 border-teal/20 focus:border-teal focus:outline-none bg-white/50 dark:bg-dark-card/50 resize-none text-slate dark:text-dark-text"
-            />
+            <div className="relative">
+              <textarea
+                ref={textareaRef}
+                value={responses[currentStep]}
+                onChange={(e) => {
+                  const newResponses = [...responses];
+                  newResponses[currentStep] = e.target.value;
+                  setResponses(newResponses);
+                }}
+                placeholder={step.placeholder}
+                className="w-full h-32 px-4 py-3 pr-14 rounded-2xl border-2 border-teal/20 focus:border-teal focus:outline-none bg-white/50 dark:bg-dark-card/50 resize-none text-slate dark:text-dark-text"
+              />
+              
+              {/* Microphone button */}
+              <button
+                onClick={toggleRecording}
+                className={`absolute right-3 bottom-3 p-2 rounded-full transition-all ${
+                  isRecording 
+                    ? 'bg-coral text-white animate-pulse' 
+                    : 'bg-teal/10 hover:bg-teal/20 text-teal'
+                }`}
+                title={isRecording ? 'Arrêter la dictée' : 'Commencer la dictée vocale'}
+              >
+                {isRecording ? (
+                  <MicOff className="w-5 h-5" />
+                ) : (
+                  <Mic className="w-5 h-5" />
+                )}
+              </button>
+            </div>
           </Card>
 
           {/* Navigation */}
