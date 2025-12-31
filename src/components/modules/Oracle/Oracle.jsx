@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
+import { useAuth } from '../../../contexts/AuthContext';
+import { storage } from '../../../utils/helpers';
 import Button from '../../ui/Button';
 import Card from '../../ui/Card';
 import { Sparkles, X, RefreshCw } from 'lucide-react';
 
 const Oracle = ({ onBack }) => {
+  const { user } = useAuth();
   const [oracle, setOracle] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
   // Pre-defined oracles (can be replaced with AI generation)
   const oracles = [
@@ -61,11 +65,37 @@ const Oracle = ({ onBack }) => {
 
   const generateOracle = () => {
     setLoading(true);
+    setSaveSuccess(false);
     setTimeout(() => {
       const randomOracle = oracles[Math.floor(Math.random() * oracles.length)];
       setOracle(randomOracle);
       setLoading(false);
     }, 1500);
+  };
+
+  const saveToJournal = () => {
+    if (!oracle) return;
+
+    const journalEntry = {
+      id: Date.now().toString(),
+      type: 'oracle',
+      module: 'Oracle',
+      moduleColor: 'solar',
+      content: {
+        title: oracle.title,
+        story: oracle.story,
+        moral: oracle.moral,
+        source: oracle.source
+      },
+      timestamp: new Date().toISOString()
+    };
+
+    const existing = storage.get(`journal_${user.id}`) || [];
+    const updated = [journalEntry, ...existing];
+    storage.set(`journal_${user.id}`, updated);
+    setSaveSuccess(true);
+    
+    setTimeout(() => setSaveSuccess(false), 3000);
   };
 
   return (
@@ -165,6 +195,16 @@ const Oracle = ({ onBack }) => {
                   </div>
                 </div>
               </Card>
+
+              {/* Save to Journal Button */}
+              <Button
+                variant="solar"
+                className="w-full mb-3"
+                onClick={saveToJournal}
+                disabled={saveSuccess}
+              >
+                {saveSuccess ? '✓ Oracle gardé dans le Journal' : '💾 Garder cet oracle'}
+              </Button>
 
               <Button
                 variant="outline"

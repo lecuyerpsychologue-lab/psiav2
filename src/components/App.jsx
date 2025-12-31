@@ -13,6 +13,7 @@ import Oracle from './modules/Oracle/Oracle';
 import Echo from './modules/Echo/Echo';
 import Heros from './modules/Heros/Heros';
 import Identite from './modules/Identite/Identite';
+import Lumiere from './modules/Lumiere/Lumiere';
 
 const AppContent = () => {
   const { user, loading } = useAuth();
@@ -60,6 +61,8 @@ const AppContent = () => {
         return <Heros onBack={onBack} />;
       case 'identite':
         return <Identite onBack={onBack} />;
+      case 'lumiere':
+        return <Lumiere onBack={onBack} />;
       default:
         return <Dashboard onNavigate={setCurrentModule} />;
     }

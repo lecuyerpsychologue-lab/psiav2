@@ -17,6 +17,7 @@ const Echo = ({ onBack }) => {
   const [currentResponse, setCurrentResponse] = useState(null);
   const [analysis, setAnalysis] = useState(null);
   const [error, setError] = useState(null);
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
   const emotions = [
     { id: 'colere', label: 'Colère', emoji: '😠', color: 'coral' },
@@ -286,7 +287,32 @@ RETOURNE UNIQUEMENT LE JSON, rien d'autre.`;
     setCurrentResponse(null);
     setAnalysis(null);
     setError(null);
+    setSaveSuccess(false);
     generateSituations();
+  };
+
+  const saveToJournal = () => {
+    if (!analysis) return;
+
+    const journalEntry = {
+      id: Date.now().toString(),
+      type: 'echo',
+      module: 'Écho',
+      moduleColor: 'coral',
+      content: {
+        meteo: analysis.meteo,
+        analyse: analysis.analyse,
+        situationsCount: responses.filter(r => r.vecu).length
+      },
+      timestamp: new Date().toISOString()
+    };
+
+    const existing = storage.get(`journal_${user.id}`) || [];
+    const updated = [journalEntry, ...existing];
+    storage.set(`journal_${user.id}`, updated);
+    setSaveSuccess(true);
+    
+    setTimeout(() => setSaveSuccess(false), 3000);
   };
 
   // Loading screen
@@ -396,6 +422,16 @@ RETOURNE UNIQUEMENT LE JSON, rien d'autre.`;
                 Retour au Dashboard
               </Button>
             </div>
+
+            {/* Save to Journal Button */}
+            <Button
+              variant="coral"
+              className="w-full"
+              onClick={saveToJournal}
+              disabled={saveSuccess}
+            >
+              {saveSuccess ? '✓ Enregistré dans le Journal' : '💾 Enregistrer dans mon journal'}
+            </Button>
           </div>
         </main>
       </div>

@@ -16,6 +16,7 @@ const Identite = ({ onBack }) => {
   const [textInput, setTextInput] = useState('');
   const [portrait, setPortrait] = useState(null);
   const [error, setError] = useState(null);
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
   useEffect(() => {
     if (part === 1 || part === 2 || part === 3) {
@@ -279,6 +280,29 @@ Retourne UNIQUEMENT le portrait, rien d'autre.`;
     setTextInput('');
     setPortrait(null);
     setError(null);
+    setSaveSuccess(false);
+  };
+
+  const saveToJournal = () => {
+    if (!portrait) return;
+
+    const journalEntry = {
+      id: Date.now().toString(),
+      type: 'identite',
+      module: 'Identité',
+      moduleColor: 'purple-400',
+      content: {
+        portrait: portrait.portrait
+      },
+      timestamp: new Date().toISOString()
+    };
+
+    const existing = storage.get(`journal_${user.id}`) || [];
+    const updated = [journalEntry, ...existing];
+    storage.set(`journal_${user.id}`, updated);
+    setSaveSuccess(true);
+    
+    setTimeout(() => setSaveSuccess(false), 3000);
   };
 
   // Intro screen
@@ -448,6 +472,16 @@ Retourne UNIQUEMENT le portrait, rien d'autre.`;
                 Retour au Dashboard
               </Button>
             </div>
+
+            {/* Save to Journal Button */}
+            <Button
+              variant="primary"
+              className="w-full bg-gradient-to-r from-purple-400 to-pink-400 text-white hover:opacity-90"
+              onClick={saveToJournal}
+              disabled={saveSuccess}
+            >
+              {saveSuccess ? '✓ Portrait enregistré dans le Journal' : '💾 Enregistrer mon portrait'}
+            </Button>
 
             <Button
               variant="ghost"

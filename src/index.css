@@ -14,7 +14,7 @@
 
   body {
     margin: 0;
-    padding: 0;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     height: 100dvh;
     overflow: hidden;
     font-family: 'Outfit', system-ui, -apple-system, sans-serif;
@@ -37,11 +37,11 @@
 
 @layer components {
   .glass-card {
-    @apply bg-white/80 backdrop-blur-md rounded-3xl shadow-lg border border-white/20;
+    @apply bg-white/80 backdrop-blur-md rounded-3xl shadow-lg border-2 border-slate/20;
   }
 
   .dark .glass-card {
-    @apply bg-dark-card/80 backdrop-blur-md border-dark-card/40;
+    @apply bg-dark-card/80 backdrop-blur-md border-2 border-dark-text/30;
   }
 
   .btn-primary {

@@ -16,7 +16,8 @@ import {
   Smile,
   Moon,
   Sun,
-  Flame
+  Flame,
+  Lightbulb
 } from 'lucide-react';
 
 const SOSModal = ({ isOpen, onClose }) => {
@@ -176,6 +177,14 @@ const Dashboard = ({ onNavigate }) => {
       bgColor: 'bg-purple-400/10'
     },
     {
+      id: 'lumiere',
+      name: 'Lumière',
+      description: 'Psychoéducation',
+      icon: Lightbulb,
+      color: 'from-blue-400 to-cyan-400',
+      bgColor: 'bg-blue-400/10'
+    },
+    {
       id: 'respiration',
       name: 'Respiration',
       description: 'Cohérence cardiaque',
@@ -263,7 +272,7 @@ const Dashboard = ({ onNavigate }) => {
               <button
                 key={module.id}
                 onClick={() => onNavigate(module.id)}
-                className="glass-card p-6 text-left hover:scale-105 transition-all duration-200 active:scale-95"
+                className="glass-card p-6 text-left hover:scale-105 transition-all duration-200 active:scale-95 border-2 border-slate/20 dark:border-dark-text/20"
               >
                 <div className={`inline-flex p-3 rounded-2xl bg-gradient-to-br ${module.color} mb-3`}>
                   <module.icon className="w-6 h-6 text-white icon-glow" />
