@@ -8,6 +8,8 @@ import Humeur from './modules/Humeur/Humeur';
 import Respiration from './modules/Respiration/Respiration';
 import Ancrage from './modules/Ancrage/Ancrage';
 import Journal from './modules/Journal/Journal';
+import Psy from './modules/Psy/Psy';
+import Oracle from './modules/Oracle/Oracle';
 
 const AppContent = () => {
   const { user, loading } = useAuth();
@@ -45,10 +47,12 @@ const AppContent = () => {
         return <Ancrage onBack={onBack} />;
       case 'journal':
         return <Journal onBack={onBack} />;
-      case 'echo':
       case 'psy':
-      case 'heros':
+        return <Psy onBack={onBack} />;
       case 'oracle':
+        return <Oracle onBack={onBack} />;
+      case 'echo':
+      case 'heros':
       case 'identite':
         return (
           <div className="h-screen flex items-center justify-center bg-cream dark:bg-dark-bg">
