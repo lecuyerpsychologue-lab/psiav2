@@ -13,6 +13,7 @@ const Heros = ({ onBack }) => {
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(false);
   const [expandedWeeks, setExpandedWeeks] = useState([0]);
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
   const questions = [
     // Rosenberg Self-Esteem Scale + 4 pillars
@@ -286,6 +287,31 @@ RETOURNE UNIQUEMENT LE JSON, rien d'autre.`;
     setAnswers({});
     setResults(null);
     setExpandedWeeks([0]);
+    setSaveSuccess(false);
+  };
+
+  const saveToJournal = () => {
+    if (!results) return;
+
+    const journalEntry = {
+      id: Date.now().toString(),
+      type: 'heros',
+      module: 'Héros',
+      moduleColor: 'solar',
+      content: {
+        score: results.score,
+        commentaire: results.commentaire,
+        programme: results.programme
+      },
+      timestamp: new Date().toISOString()
+    };
+
+    const existing = storage.get(`journal_${user.id}`) || [];
+    const updated = [journalEntry, ...existing];
+    storage.set(`journal_${user.id}`, updated);
+    setSaveSuccess(true);
+    
+    setTimeout(() => setSaveSuccess(false), 3000);
   };
 
   // Loading screen
@@ -424,6 +450,16 @@ RETOURNE UNIQUEMENT LE JSON, rien d'autre.`;
                 Retour au Dashboard
               </Button>
             </div>
+
+            {/* Save to Journal Button */}
+            <Button
+              variant="solar"
+              className="w-full"
+              onClick={saveToJournal}
+              disabled={saveSuccess}
+            >
+              {saveSuccess ? '✓ Enregistré dans le Journal' : '💾 Enregistrer dans mon journal'}
+            </Button>
           </div>
         </main>
       </div>

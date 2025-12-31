@@ -207,26 +207,105 @@ const Journal = ({ onBack }) => {
                   </Button>
                 </Card>
               ) : (
-                entries.map(entry => (
-                  <Card key={entry.id} className="relative">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1">
-                        <p className="text-sm text-slate/60 dark:text-dark-text/60 mb-2">
-                          {formatDateTime(entry.timestamp)}
-                        </p>
-                        <p className="text-slate dark:text-dark-text whitespace-pre-wrap">
-                          {entry.content}
-                        </p>
+                entries.map(entry => {
+                  // Check if this is a module entry or a personal note
+                  const isModuleEntry = entry.type && entry.module;
+                  
+                  // Color mapping for module banners
+                  const colorMap = {
+                    'coral': { banner: 'bg-coral', badge: 'bg-coral/10 text-coral' },
+                    'solar': { banner: 'bg-solar', badge: 'bg-solar/10 text-solar' },
+                    'purple-400': { banner: 'bg-purple-400', badge: 'bg-purple-400/10 text-purple-400' }
+                  };
+                  const colors = colorMap[entry.moduleColor] || { banner: 'bg-slate', badge: 'bg-slate/10 text-slate' };
+                  
+                  return (
+                    <Card key={entry.id} className="relative">
+                      {/* Module Banner */}
+                      {isModuleEntry && (
+                        <div className={`absolute top-0 left-0 right-0 h-1 rounded-t-3xl ${colors.banner}`} />
+                      )}
+                      
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1">
+                          {/* Module Label */}
+                          {isModuleEntry && (
+                            <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg ${colors.badge} mb-2`}>
+                              <span className="text-xs font-semibold">
+                                {entry.module}
+                              </span>
+                            </div>
+                          )}
+                          
+                          <p className="text-sm text-slate/60 dark:text-dark-text/60 mb-2">
+                            {formatDateTime(entry.timestamp)}
+                          </p>
+                          
+                          {/* Content based on type */}
+                          {entry.type === 'echo' && (
+                            <div className="space-y-2">
+                              <div className="p-3 rounded-xl bg-coral/10">
+                                <p className="font-semibold text-coral mb-1">Météo émotionnelle</p>
+                                <p className="text-sm text-slate dark:text-dark-text">{entry.content.meteo.description}</p>
+                              </div>
+                              <div className="text-sm text-slate/80 dark:text-dark-text/80">
+                                <p className="font-semibold mb-1">Analyse :</p>
+                                <p className="mb-1">{entry.content.analyse.schemas}</p>
+                                <p className="mb-1">{entry.content.analyse.forces}</p>
+                                <p>{entry.content.analyse.alternatives}</p>
+                              </div>
+                            </div>
+                          )}
+                          
+                          {entry.type === 'heros' && (
+                            <div className="space-y-2">
+                              <div className="p-3 rounded-xl bg-solar/10">
+                                <p className="font-semibold text-solar mb-1">Score de confiance : {entry.content.score}%</p>
+                                <p className="text-sm text-slate dark:text-dark-text">{entry.content.commentaire}</p>
+                              </div>
+                              <p className="text-xs text-slate/60 dark:text-dark-text/60">
+                                Programme 60 jours avec {entry.content.programme.length} semaines
+                              </p>
+                            </div>
+                          )}
+                          
+                          {entry.type === 'oracle' && (
+                            <div className="space-y-2">
+                              <div className="p-3 rounded-xl bg-solar/10">
+                                <p className="font-bold text-solar mb-1">{entry.content.title}</p>
+                                <p className="text-xs text-solar/70 mb-2">{entry.content.source}</p>
+                                <p className="text-sm text-slate/80 dark:text-dark-text/80 mb-2">{entry.content.story}</p>
+                                <p className="text-sm font-medium text-teal dark:text-cyan-400">{entry.content.moral}</p>
+                              </div>
+                            </div>
+                          )}
+                          
+                          {entry.type === 'identite' && (
+                            <div className="p-3 rounded-xl bg-purple-400/10">
+                              <p className="font-semibold text-purple-400 mb-2">Mon portrait narratif</p>
+                              <p className="text-sm text-slate dark:text-dark-text leading-relaxed">
+                                {entry.content.portrait}
+                              </p>
+                            </div>
+                          )}
+                          
+                          {/* Personal note (no type) */}
+                          {!isModuleEntry && (
+                            <p className="text-slate dark:text-dark-text whitespace-pre-wrap">
+                              {entry.content}
+                            </p>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => deleteEntry(entry.id)}
+                          className="flex-shrink-0 p-2 rounded-full hover:bg-coral/10 text-coral transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </div>
-                      <button
-                        onClick={() => deleteEntry(entry.id)}
-                        className="flex-shrink-0 p-2 rounded-full hover:bg-coral/10 text-coral transition-colors"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </Card>
-                ))
+                    </Card>
+                  );
+                })
               )}
             </>
           )}

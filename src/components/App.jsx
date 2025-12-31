@@ -4,6 +4,7 @@ import { ThemeProvider } from '../contexts/ThemeContext';
 import Login from './auth/Login';
 import Register from './auth/Register';
 import Dashboard from './dashboard/Dashboard';
+import FloatingDock from './navigation/FloatingDock';
 import Humeur from './modules/Humeur/Humeur';
 import Respiration from './modules/Respiration/Respiration';
 import Ancrage from './modules/Ancrage/Ancrage';
@@ -13,6 +14,7 @@ import Oracle from './modules/Oracle/Oracle';
 import Echo from './modules/Echo/Echo';
 import Heros from './modules/Heros/Heros';
 import Identite from './modules/Identite/Identite';
+import Lumiere from './modules/Lumiere/Lumiere';
 
 const AppContent = () => {
   const { user, loading } = useAuth();
@@ -60,12 +62,19 @@ const AppContent = () => {
         return <Heros onBack={onBack} />;
       case 'identite':
         return <Identite onBack={onBack} />;
+      case 'lumiere':
+        return <Lumiere onBack={onBack} />;
       default:
         return <Dashboard onNavigate={setCurrentModule} />;
     }
   };
 
-  return renderModule();
+  return (
+    <>
+      {renderModule()}
+      {user && <FloatingDock currentModule={currentModule} onNavigate={setCurrentModule} />}
+    </>
+  );
 };
 
 const App = () => {

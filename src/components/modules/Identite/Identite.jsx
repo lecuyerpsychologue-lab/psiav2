@@ -16,6 +16,7 @@ const Identite = ({ onBack }) => {
   const [textInput, setTextInput] = useState('');
   const [portrait, setPortrait] = useState(null);
   const [error, setError] = useState(null);
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
   useEffect(() => {
     if (part === 1 || part === 2 || part === 3) {
@@ -36,7 +37,23 @@ const Identite = ({ onBack }) => {
 RÈGLES:
 - Questions personnelles, introspectives et variées
 - Maximum 8 mots par question
-- Exemples: "Ton surnom ?", "Ton point faible ?", "Ton rêve le plus fou ?"
+- DOIT couvrir CES 10 thématiques OBLIGATOIRES:
+  1. Surnom / Comment on t'appelle
+  2. Point faible
+  3. Point fort / Qualité
+  4. Rêve le plus fou
+  5. Plus grande peur
+  6. Ce qui te rend heureux
+  7. Ce qui t'énerve le plus
+  8. Défaut que ton entourage te trouverait
+  9. Qualité que ton entourage te trouverait
+  10. Ce que tu changerais dans le monde
+
+Exemples: 
+"Ton surnom préféré ?", 
+"Ton plus gros défaut ?", 
+"Ton rêve le plus fou ?",
+"Ce qui te rend vraiment heureux ?"
 
 Retourne UNIQUEMENT un tableau JSON:
 ["question 1", "question 2", ...]`;
@@ -99,16 +116,16 @@ Retourne UNIQUEMENT un tableau JSON:
         setQuestions({
           ...questions,
           part1: [
-            "Ton surnom ?",
-            "Ton point faible ?",
+            "Ton surnom préféré ?",
+            "Ton plus gros défaut ?",
+            "Ta plus belle qualité ?",
             "Ton rêve le plus fou ?",
-            "Ce qui te fait rire ?",
             "Ta plus grande peur ?",
-            "Ton talent caché ?",
-            "Ce que tu détestes ?",
-            "Ton lieu préféré ?",
-            "Ta devise ?",
-            "Ce qui te rend unique ?"
+            "Ce qui te rend vraiment heureux ?",
+            "Ce qui t'énerve le plus ?",
+            "Défaut que ton entourage te trouverait ?",
+            "Qualité que ton entourage te trouverait ?",
+            "Ce que tu changerais dans le monde ?"
           ]
         });
       } else if (part === 2) {
@@ -279,6 +296,29 @@ Retourne UNIQUEMENT le portrait, rien d'autre.`;
     setTextInput('');
     setPortrait(null);
     setError(null);
+    setSaveSuccess(false);
+  };
+
+  const saveToJournal = () => {
+    if (!portrait) return;
+
+    const journalEntry = {
+      id: Date.now().toString(),
+      type: 'identite',
+      module: 'Identité',
+      moduleColor: 'purple-400',
+      content: {
+        portrait: portrait.portrait
+      },
+      timestamp: new Date().toISOString()
+    };
+
+    const existing = storage.get(`journal_${user.id}`) || [];
+    const updated = [journalEntry, ...existing];
+    storage.set(`journal_${user.id}`, updated);
+    setSaveSuccess(true);
+    
+    setTimeout(() => setSaveSuccess(false), 3000);
   };
 
   // Intro screen
@@ -448,6 +488,16 @@ Retourne UNIQUEMENT le portrait, rien d'autre.`;
                 Retour au Dashboard
               </Button>
             </div>
+
+            {/* Save to Journal Button */}
+            <Button
+              variant="primary"
+              className="w-full bg-gradient-to-r from-purple-400 to-pink-400 text-white hover:opacity-90"
+              onClick={saveToJournal}
+              disabled={saveSuccess}
+            >
+              {saveSuccess ? '✓ Portrait enregistré dans le Journal' : '💾 Enregistrer mon portrait'}
+            </Button>
 
             <Button
               variant="ghost"
